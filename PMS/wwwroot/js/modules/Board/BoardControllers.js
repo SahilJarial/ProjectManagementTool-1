@@ -2,12 +2,77 @@ function PMS_Kanban_Plugins() {
 
 }
 
+
 const BoardController = (
     dom => {
+
+        const Modal_Kanban_State = new (function Modal_State() {
+
+            this.saveChanges = {
+           set:false,
+            yes:{ 
+                    then:null
+                },
+                no: {
+                    then:null,
+                }
+            }
+        })();
+
+
+        //For save changes button on modal
+        $ && $(dom).find("button#pms-kanban-modal-btn-saveChanges").click(e => {
+            try {
+
+                Modal_Kanban_State
+                    && Modal_Kanban_State.saveChanges
+                    && Modal_Kanban_State.saveChanges.set
+                    && Modal_Kanban_State.saveChanges.yes.then();
+
+                Modal_Kanban_State.saveChanges.no.then();//closing action
+
+            } catch (ex) {
+
+                console.error(ex);
+                Modal_Kanban_State.saveChanges.set = false
+                return;
+            }
+
+            Modal_Kanban_State.saveChanges.set = false
+        });
+
+        //for close button on modal
+        $ && $(dom).find("button#pms-kanban-modal-btn-close").click(e => {
+
+            try {
+
+                Modal_Kanban_State
+                    && Modal_Kanban_State.saveChanges
+                    && Modal_Kanban_State.saveChanges.set
+                    && Modal_Kanban_State.saveChanges.no.then();
+
+                Modal_Kanban_State.saveChanges.set = false
+            } catch (ex) {
+
+                console.error(ex);
+
+                Modal_Kanban_State.saveChanges.set = false
+                return;
+            }
+
+            Modal_Kanban_State.saveChanges.set = false
+
+        });
+
+
+
 
         var pm_module_counter = 0;
 
         const Counter=_=> ++pm_module_counter;
+
+        
+
 
         const PMS_Board_Plugins = {
             "onDragStop": [],
@@ -19,6 +84,8 @@ const BoardController = (
             UPDATE_COLUMN_COUNTER: Counter(),
 
         }
+
+
 
         PMS_Kanban_Plugins.prototype.plugins = PMS_Board_Plugins;
 
@@ -88,7 +155,7 @@ const BoardController = (
                     <button class="btn btn-sm btn-reveal py-0 px-2" type="button" id="PMS-kanbanColumn-${dbId}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg class="svg-inline--fa fa-ellipsis-h fa-w-16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"></path></svg><!-- <span class="fas fa-ellipsis-h"></span> Font Awesome fontawesome.com --></button>
                     <div class="dropdown-menu dropdown-menu-end py-0" aria-labelledby="PMS-kanbanColumn-${dbId}">
                         <a class="dropdown-item" href="#!">Add Card</a><a class="dropdown-item" href="#!" id=PMS-Btn-Kanban-Column-Edit-${dbId}>Edit</a><a class="dropdown-item" href="#!" id=PMS-Btn-Kanban-Column-CopyLink-${dbId}>Copy link</a>
-                        <div class="dropdown-divider"></div><a class="dropdown-item text-danger pms-kanban-btn-column-delete" href="#!" id=PMS-Btn-Kanban-Column-Remove-${dbId}>Remove</a>
+                        <div class="dropdown-divider"></div><a class="dropdown-item text-danger pms-kanban-btn-column-delete" type="button" href="#!" id=PMS-Btn-Kanban-Column-Remove-${dbId} data-toggle="modal" data-target="#saveChangesModal">Remove</a>
                     </div>
                 </div>      
             </div>
@@ -120,7 +187,7 @@ const BoardController = (
                                                 <button class="btn btn-sm btn-falcon-default kanban-item-dropdown-btn hover-actions" type="button" data-boundary="viewport" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg class="svg-inline--fa fa-ellipsis-h fa-w-16" data-fa-transform="shrink-2" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="ellipsis-h" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="" style="transform-origin: 0.5em 0.5em;"><g transform="translate(256 256)"><g transform="translate(0, 0)  scale(0.875, 0.875)  rotate(0 0 0)"><path fill="currentColor" d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z" transform="translate(-256 -256)"></path></g></g></svg><!-- <span class="fas fa-ellipsis-h" data-fa-transform="shrink-2"></span> Font Awesome fontawesome.com --></button>
                                                 <div class="dropdown-menu dropdown-menu-end py-0">
                                                     <a class="dropdown-item" href="#!">Add Card</a><a class="dropdown-item" href="#!">Edit</a><a class="dropdown-item" href="#!">Copy link</a>
-                                                    <div class="dropdown-divider"></div><a class="dropdown-item text-danger pms-kanban-btn-item-delete" href="#!" >Remove</a>
+                                                    <div class="dropdown-divider"></div><a class="dropdown-item text-danger pms-kanban-btn-item-delete" href="#!" data-toggle="modal" data-target="#saveChangesModal">Remove</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -153,22 +220,34 @@ const BoardController = (
                     e.preventDefault();
                     e.stopPropagation();
 
+                    
                     let next = e.target;
 
-                    while ((next.classList != "kanban-item") && (next = next.parentElement));
+                    Modal_Kanban_State.saveChanges.yes.then=() => {
 
-                    let container = next && next.parentElement || {};
 
-                    if (container.removeChild && container.removeChild(next))
-                        PMS_Kanban_Plugins.prototype.plugins
-                            .onDragStop.forEach(_module => _module.module_name == PMS_Board_Module_Name.UPDATE_COLUMN_COUNTER
-                                && _module.module({
-                                    data: {
-                                        originalSource: {
-                                            parentElement: container
+                        while ((next.classList != "kanban-item") && (next = next.parentElement));
+
+                        let container = next && next.parentElement || {};
+
+                        if (container.removeChild && container.removeChild(next))
+                            PMS_Kanban_Plugins.prototype.plugins
+                                .onDragStop.forEach(_module => _module.module_name == PMS_Board_Module_Name.UPDATE_COLUMN_COUNTER
+                                    && _module.module({
+                                        data: {
+                                            originalSource: {
+                                                parentElement: container
+                                            }
                                         }
-                                    }
-                                }));
+                                    }));
+                    }//then END
+
+                    Modal_Kanban_State.saveChanges.no.then = _=>$(dom).find("#saveChangesModal").modal("hide");
+
+                    Modal_Kanban_State.saveChanges.set = true;
+
+                    $(dom).find("#saveChangesModal").modal("show");
+
                 });//end of resetdeletevent
 
 
@@ -244,7 +323,6 @@ const BoardController = (
 
                                }
                             )();//END
-
                         }
                     });
 
@@ -253,19 +331,26 @@ const BoardController = (
                         e.preventDefault();
                         e.stopPropagation();
 
-                        let col = e.target;
-                        let next = col.parentElement;
+                      
 
-                        while (!(/kb-column/g.test(next.getAttribute("data-kanban-column")))
-                                               && (next = next.parentElement));
+                        Modal_Kanban_State.saveChanges.yes.then = () => {
+                                let col = e.target;
+                                let next = col.parentElement;
 
-                        let container = next && next.parentElement;
+                                while (!(/kb-column/g.test(next.getAttribute("data-kanban-column")))
+                                    && (next = next.parentElement));
 
-                        container.removeChild(next);                 
+                                let container = next && next.parentElement;
+
+                                container.removeChild(next);
+                        }
+
+                        Modal_Kanban_State.saveChanges.no.then = () => $(dom).find("#saveChangesModal").modal("hide");
+
+                        Modal_Kanban_State.saveChanges.set = true;
+
+                        $(dom).find("#saveChangesModal").modal("show");
                     });
-
-
-
                     resetItemDeletEvent(column);
 
                 }

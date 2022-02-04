@@ -258,7 +258,7 @@
                     </div>
                     <div class="col-auto d-flex align-items-center">
 
-                        <button class="btn btn-sm btn-falcon-default me-2 d-none d-md-block"  id="pms-kanban-btn-lock-column"> <span class="fas fa-lock me-2"> </span>Lock Mode</button>
+                        <button class="btn btn-sm btn-falcon-default me-2 d-none d-md-block" id="pms-kanban-btn-lock-column"> <span class="fas fa-lock me-2"> </span>Lock Mode</button>
                         <div class="dropdown font-sans-serif">
                             <button class="btn btn-sm btn-falcon-default dropdown-toggle dropdown-caret-none" type="button" id="kanbanMenu" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"> <span class="fas fa-ellipsis-h"> </span> </button>
                             <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="kanbanMenu">
@@ -1737,8 +1737,27 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal -->
+            <div class="modal fade" id="saveChangesModal" tabindex="-1" role="dialog" aria-labelledby="saveChangesModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="saveChangesModalLabel">Important!!</h5>
+                        </div>
+                        <div class="modal-body">
+                           You are about to  make changes which cannot be reversed !!
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="pms-kanban-modal-btn-close">Close</button>
+                            <button type="button" class="btn btn-primary" id="pms-kanban-modal-btn-saveChanges">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+
     <!-- =============================================== -->
     <!-- End of Main Content-- >
     <!-- =============================================== -->
